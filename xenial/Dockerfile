@@ -56,6 +56,10 @@ RUN set -xe \
 		--build="$gnuArch" \
 		--prefix="$HTTPD_PREFIX" \
 		--enable-mods-shared=reallyall \
+		--enable-cache=static \
+		--enable-mem-cache=static \
+		--enable-file-cache=static \
+		--enable-disk-cache=static \
 	&& make -j "$(nproc)" \
 	&& make install \
 	&& rm -rf /usr/local/src/httpd-${HTTPD_VERSION} \
