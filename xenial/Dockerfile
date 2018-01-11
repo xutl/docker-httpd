@@ -22,7 +22,7 @@ RUN set -xe \
 ARG HTTPD_VERSION
 
 ENV HTTPD_VERSION 2.4.29
-ENV HTTPD_TGZ_URL https://mirrors.aliyun.com/apache/httpd/httpd-${HTTPD_VERSION}.tar.gz
+ENV HTTPD_TGZ_URL http://mirrors.shuosc.org/apache/httpd/httpd-${HTTPD_VERSION}.tar.gz
 
 ENV HTTPD_PREFIX /usr/local/apache2
 ENV PATH $HTTPD_PREFIX/bin:$PATH
