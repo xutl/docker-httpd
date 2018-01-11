@@ -2,20 +2,9 @@ FROM xutl/ubuntu:xenial
 
 LABEL maintainer="xutongle@gmail.com"
 
-ARG HTTPD_VERSION
-
-ENV HTTPD_VERSION 2.4.29
-ENV HTTPD_TGZ_URL https://mirrors.aliyun.com/apache/httpd/httpd-${HTTPD_VERSION}.tar.gz
-
-ENV HTTPD_PREFIX /usr/local/apache2
-ENV PATH $HTTPD_PREFIX/bin:$PATH
-RUN mkdir -p "$HTTPD_PREFIX" \
-	&& chown www-data:www-data "$HTTPD_PREFIX"
-WORKDIR $HTTPD_PREFIX
-
 # install httpd runtime dependencies
-# https://httpd.apache.org/docs/2.4/install.html#requirements
-RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/' /etc/apt/sources.list \
+RUN set -xe \
+#	&& sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/' /etc/apt/sources.list \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		libapr1 \
@@ -30,8 +19,16 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/' /etc/apt/sources.list \
 		libxml2 \
 	&& rm -r /var/lib/apt/lists/*
 
-RUN set -eux; \
-	buildDeps=" \
+ARG HTTPD_VERSION
+
+ENV HTTPD_VERSION 2.4.29
+ENV HTTPD_TGZ_URL https://mirrors.aliyun.com/apache/httpd/httpd-${HTTPD_VERSION}.tar.gz
+
+ENV HTTPD_PREFIX /usr/local/apache2
+ENV PATH $HTTPD_PREFIX/bin:$PATH
+
+RUN set -xe \
+	&& buildDeps=" \
 		bzip2 \
 		ca-certificates \
 		dpkg-dev \
@@ -44,30 +41,30 @@ RUN set -eux; \
 		zlib1g-dev \
 		make \
 		curl \
-	"; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends --no-install-suggests -V $buildDeps; \
-	rm -r /var/lib/apt/lists/*; \
+	" \
 	\
-	curl -fSL ${HTTPD_TGZ_URL} -o httpd-${HTTPD_VERSION}.tar.gz; \
-	tar zxf httpd-${HTTPD_VERSION}.tar.gz && rm -rf httpd-${HTTPD_VERSION}.tar.gz && cd httpd-${HTTPD_VERSION}/ && \
-	gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
-	./configure \
+#	&& sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/' /etc/apt/sources.list \
+	&& apt-get update && apt-get install -y --no-install-recommends --no-install-suggests mcrypt $buildDeps && rm -r /var/lib/apt/lists/* \
+	\
+	&& cd /usr/local/src \
+	&& curl -fSL ${HTTPD_TGZ_URL} -o httpd-${HTTPD_VERSION}.tar.gz \
+	&& tar zxf httpd-${HTTPD_VERSION}.tar.gz \
+	&& rm -rf httpd-${HTTPD_VERSION}.tar.gz \
+	&& cd httpd-${HTTPD_VERSION}/ \
+	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
+	&& ./configure \
 		--build="$gnuArch" \
 		--prefix="$HTTPD_PREFIX" \
 		--enable-mods-shared=reallyall \
-	; \
-	make -j "$(nproc)"; \
-	make install; \
-	\
-	rm -rf $HTTPD_PREFIX/httpd-${HTTPD_VERSION}; \
-	\
-	sed -ri \
+	&& make -j "$(nproc)" \
+	&& make install \
+	&& rm -rf /usr/local/src/httpd-${HTTPD_VERSION} \
+	&& sed -ri \
 		-e 's!^(\s*CustomLog)\s+\S+!\1 /proc/self/fd/1!g' \
 		-e 's!^(\s*ErrorLog)\s+\S+!\1 /proc/self/fd/2!g' \
-		"$HTTPD_PREFIX/conf/httpd.conf"; \
-	\
-	apt-get purge -y --auto-remove $buildDeps
+		"$HTTPD_PREFIX/conf/httpd.conf" \
+	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
+
 
 COPY httpd-foreground /usr/local/bin/
 
