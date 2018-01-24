@@ -6,10 +6,9 @@ services:
   - docker
 
 env:
-#  - VERSION=2.2 VARIANT=centos7 HTTPD_VERSION=2.2.2
-#  - VERSION=2.2 VARIANT=jessie HTTPD_VERSION=2.2.2
-#  - VERSION=2.2 VARIANT=stretch HTTPD_VERSION=2.2.2
-  - VERSION=2.4 VARIANT=xenial HTTPD_VERSION=2.4.29
+#  - VERSION=2.2 VARIANT=xenial HTTPD_VERSION=2.4.29
+#  - VERSION=2.4 VARIANT=base HTTPD_VERSION=2.4.29
+  - VERSION=2.4 VARIANT=php HTTPD_VERSION=2.4.29
 
 before_install:
   - export DOCKER_COMPOSE_VERSION=1.18.0
@@ -20,8 +19,8 @@ before_install:
 
 before_script:
   - env | sort
-  - cd "$VARIANT"
-  - image="xutl/httpd:${HTTPD_VERSION}-${VARIANT}"
+  - cd "$VERSION/$VARIANT"
+  - image="xutl/httpd:${VERSION}-${VARIANT}"
 
 script:
   - travis_retry docker build --build-arg HTTPD_VERSION=${HTTPD_VERSION} -t "$image" .
@@ -30,13 +29,15 @@ after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
       docker login --username="${DOCKER_REGISTRY_USER}" --password="${DOCKER_REGISTRY_PASSWORD}";
       docker push $image;
-      docker tag $image xutl/httpd:${VERSION};
-      docker push xutl/httpd:${VERSION};
-      if [ "${VARIANT}" == "xenial" ]; then
-        docker tag $image xutl/httpd:${HTTPD_VERSION};
-        docker push xutl/httpd:${HTTPD_VERSION};
+      docker tag $image xutl/httpd:${HTTPD_VERSION}-${VARIANT};
+      docker push xutl/httpd:${HTTPD_VERSION}-${VARIANT};
+      if [ "${VERSION}" == "2.4" ]; then
         docker tag $image xutl/httpd:latest;
         docker push xutl/httpd:latest;
+        docker tag $image xutl/httpd:${HTTPD_VERSION};
+        docker push xutl/httpd:${HTTPD_VERSION};
+        docker tag $image xutl/httpd:${VERSION};
+        docker push xutl/httpd:${VERSION};
       fi
     fi
 
