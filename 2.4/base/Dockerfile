@@ -6,8 +6,6 @@ ARG HTTPD_VERSION
 # Environment settings
 ENV HTTPD_VERSION=${HTTPD_VERSION:-2.4.29}
 ENV HTTPD_TGZ_URL http://mirrors.hust.edu.cn/apache/httpd/httpd-${HTTPD_VERSION}.tar.gz
-ENV HTTPD_PREFIX /usr/local/apache2
-ENV PATH $HTTPD_PREFIX/bin:$PATH
 
 RUN set -xe \
 	&& buildDeps=" \
@@ -28,7 +26,7 @@ RUN set -xe \
 	&& tar zxf nghttp2-${nghttp2Version}.tar.gz \
 	&& rm -rf nghttp2-${nghttp2Version}.tar.gz \
 	&& cd nghttp2-${nghttp2Version} \
-	&& ./configure --prefix=/usr/local/nghttp2 \
+	&& ./configure --prefix=/usr/local \
 	&& make -j "$(nproc)" \
 	&& make install \
 	&& cd /usr/local/src \
@@ -64,7 +62,7 @@ RUN set -xe \
 		--enable-mpms-shared=all \
 		--enable-remoteip \
 		--enable-http2 \
-		--with-nghttp2=/usr/local/nghttp2
+		--with-nghttp2=/usr/local \
 	&& make -j "$(nproc)" \
 	&& make install \
 	&& rm -rf /usr/local/src/httpd-${HTTPD_VERSION} \
