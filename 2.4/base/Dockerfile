@@ -19,6 +19,8 @@ ARG HTTPD_VERSION
 # Environment settings
 ENV HTTPD_VERSION=${HTTPD_VERSION:-2.4.29}
 ENV HTTPD_TGZ_URL http://mirrors.hust.edu.cn/apache/httpd/httpd-${HTTPD_VERSION}.tar.gz
+ENV HTTPD_PREFIX /usr/local/apache2
+ENV PATH $HTTPD_PREFIX/bin:$PATH
 
 RUN set -xe \
 	&& buildDeps=" \
@@ -57,7 +59,7 @@ RUN set -xe \
 	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
 	&& ./configure \
 		--build="$gnuArch" \
-		--prefix=/usr/local/apache2 \
+		--prefix="$HTTPD_PREFIX" \
 		--enable-layout=Apache \
 		--enable-mods-shared=most \
 		--enable-headers \
@@ -75,7 +77,7 @@ RUN set -xe \
 	&& make -j "$(nproc)" \
 	&& make install \
 	&& rm -rf /usr/local/src/httpd-${HTTPD_VERSION} \
-	&& rm -rf /usr/local/apache2/manual \
+	&& rm -rf $HTTPD_PREFIX/manual \
 	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
 
 COPY httpd-foreground /usr/local/bin/
