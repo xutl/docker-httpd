@@ -89,7 +89,9 @@ RUN set -xe \
 	&& make install \
 	&& rm -rf /usr/local/src/httpd-${HTTPD_VERSION} \
 	&& rm -rf ${HTTPD_PREFIX}/manual \
-	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
+	\
+	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps \
+	&& mkdir -p /usr/local/apache2/conf/sites
 
 # Add configuration files
 COPY image-files/ /
