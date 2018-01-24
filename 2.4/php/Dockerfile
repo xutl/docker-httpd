@@ -2,6 +2,15 @@ FROM xutl/base-php:xenial
 
 LABEL maintainer="xutongle@gmail.com"
 
+RUN set -x \
+#	&& sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/' /etc/apt/sources.list \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		libpcre3 \
+		libzip4 \
+		expat  \
+	&& rm -r /var/lib/apt/lists/*
+
 ARG HTTPD_VERSION
 
 # Environment settings
@@ -17,7 +26,7 @@ RUN set -xe \
 		libexpat1-dev \
 	" \
 #	&& sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/' /etc/apt/sources.list \
-	&& apt-get update && apt-get install -y --no-install-recommends --no-install-suggests libpcre3 libzip4 expat $buildDeps && rm -r /var/lib/apt/lists/* \
+	&& apt-get update && apt-get install -y --no-install-recommends --no-install-suggests $buildDeps && rm -r /var/lib/apt/lists/* \
 	\
 	&& AprVersion=1.6.3 \
 		AprUtilVersion=1.6.1 \

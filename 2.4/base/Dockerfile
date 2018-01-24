@@ -2,6 +2,18 @@ FROM xutl/ubuntu:xenial
 
 LABEL maintainer="xutongle@gmail.com"
 
+RUN set -x \
+#	&& sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/' /etc/apt/sources.list \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+		curl \
+		libpcre3 \
+		libzip4 \
+		expat \
+		libssl1.0.0 \
+		libzip4 \
+	&& rm -r /var/lib/apt/lists/*
+
 ARG HTTPD_VERSION
 
 # Environment settings
@@ -10,6 +22,8 @@ ENV HTTPD_TGZ_URL http://mirrors.hust.edu.cn/apache/httpd/httpd-${HTTPD_VERSION}
 
 RUN set -xe \
 	&& buildDeps=" \
+		make \
+		gcc \
 		libpcre3-dev \
 		libzip-dev \
 		libcurl4-openssl-dev \
@@ -17,7 +31,7 @@ RUN set -xe \
 		libexpat1-dev \
 	" \
 #	&& sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/' /etc/apt/sources.list \
-	&& apt-get update && apt-get install -y --no-install-recommends --no-install-suggests libpcre3 libzip4 expat $buildDeps && rm -r /var/lib/apt/lists/* \
+	&& apt-get update && apt-get install -y --no-install-recommends --no-install-suggests $buildDeps && rm -r /var/lib/apt/lists/* \
 	\
 	&& AprVersion=1.6.3 \
 		AprUtilVersion=1.6.1 \
