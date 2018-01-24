@@ -56,9 +56,8 @@ RUN set -xe \
 	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
 	&& ./configure \
 		--build="$gnuArch" \
-		--prefix=/usr/local \
-		--libdir=/usr/local/lib64 \
-		--enable-layout=GNU \
+		--prefix=/usr/local/apache2 \
+		--enable-layout=Apache \
 		--enable-mods-shared=most \
 		--enable-headers \
 		--enable-mime-magic \
@@ -75,7 +74,7 @@ RUN set -xe \
 	&& make -j "$(nproc)" \
 	&& make install \
 	&& rm -rf /usr/local/src/httpd-${HTTPD_VERSION} \
-	&& rm -rf /usr/local/share/apache2/manual \
+	&& rm -rf /usr/local/apache2/manual \
 	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
 
 COPY httpd-foreground /usr/local/bin/
