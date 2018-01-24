@@ -4,7 +4,7 @@ LABEL maintainer="xutongle@gmail.com"
 
 ARG HTTPD_VERSION
 # Environment settings
-ENV HTTPD_VERSION=${HTTPD_VERSION:-2.4.29}
+ENV HTTPD_VERSION=${HTTPD_VERSION:-2.2.34}
 ENV HTTPD_TGZ_URL http://mirrors.hust.edu.cn/apache/httpd/httpd-${HTTPD_VERSION}.tar.gz
 ENV HTTPD_PREFIX /usr/local/apache2
 ENV PATH $HTTPD_PREFIX/bin:$PATH

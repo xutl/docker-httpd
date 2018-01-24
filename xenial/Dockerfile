@@ -24,7 +24,7 @@ ARG HTTPD_VERSION
 ENV HTTPD_VERSION 2.4.29
 ENV HTTPD_TGZ_URL http://mirrors.shuosc.org/apache/httpd/httpd-${HTTPD_VERSION}.tar.gz
 
-ENV HTTPD_PREFIX /usr/local/apache2
+ENV HTTPD_PREFIX /usr/local/apache
 ENV PATH $HTTPD_PREFIX/bin:$PATH
 
 RUN set -xe \
