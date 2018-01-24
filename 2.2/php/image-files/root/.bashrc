@@ -1,0 +1,1 @@
+echo "Apache version: ${HTTPD_VERSION}"

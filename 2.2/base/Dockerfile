@@ -91,7 +91,8 @@ RUN set -xe \
 	&& rm -rf ${HTTPD_PREFIX}/manual \
 	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
 
-COPY httpd-foreground /usr/local/bin/
+# Add configuration files
+COPY image-files/ /
 
 EXPOSE 80
 
