@@ -39,7 +39,7 @@ RUN set -xe \
 	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
 	&& ./configure \
 		--build="$gnuArch" \
-		--prefix=/usr/local/apache \
+		--prefix="$HTTPD_PREFIX" \
 		--enable-mods-shared=most \
 		--enable-headers \
 		--enable-mime-magic \
