@@ -11,6 +11,9 @@ ENV PATH $HTTPD_PREFIX/bin:$PATH
 
 RUN set -xe \
 	&& buildDeps=" \
+		make \
+		gcc \
+		dpkg-dev \
 		libpcre3-dev \
 		libzip-dev \
 		libcurl4-openssl-dev \
