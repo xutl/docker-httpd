@@ -58,6 +58,7 @@ RUN set -xe \
 		--build="$gnuArch" \
 		--prefix=/usr/local \
 		--libdir=/usr/local/lib64 \
+		--sysconfdir=/usr/local/etc \
 		--enable-mods-shared=most \
 		--enable-headers \
 		--enable-mime-magic \
