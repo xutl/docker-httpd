@@ -71,7 +71,7 @@ RUN set -xe \
 	&& make -j "$(nproc)" \
 	&& make install \
 	&& rm -rf /usr/local/src/httpd-${HTTPD_VERSION} \
-	&& rm -rf $HTTPD_PREFIX/manual \
+	&& rm -rf ${HTTPD_PREFIX}/manual \
 	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
 
 COPY httpd-foreground /usr/local/bin/

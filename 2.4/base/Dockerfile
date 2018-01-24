@@ -38,9 +38,20 @@ RUN set -xe \
 	\
 	&& AprVersion=1.6.3 \
 		AprUtilVersion=1.6.1 \
+		nghttp2Version=1.29.0 \
 	&& export CFLAGS="-O2" \
 	&& cd /usr/local/src \
+	&& curl -fSL https://github.com/nghttp2/nghttp2/releases/download/v${nghttp2Version}/nghttp2-${nghttp2Version}.tar.gz -o nghttp2-${nghttp2Version}.tar.gz \
+	&& tar zxf nghttp2-${nghttp2Version}.tar.gz \
+	&& rm -f nghttp2-${nghttp2Version}.tar.gz \
+	&& cd nghttp2-${nghttp2Version} \
+	&& ./configure \
+		--prefix=/usr/local \
+	&& make -j "$(nproc)" \
+	&& make install \
+	&& rm -rf /usr/local/src/nghttp2-${nghttp2Version} \
 	\
+	&& cd /usr/local/src \
 	&& curl -fSL ${HTTPD_TGZ_URL} -o httpd-${HTTPD_VERSION}.tar.gz \
 	&& tar zxf httpd-${HTTPD_VERSION}.tar.gz \
 	&& rm -rf httpd-${HTTPD_VERSION}.tar.gz \
@@ -77,7 +88,7 @@ RUN set -xe \
 	&& make -j "$(nproc)" \
 	&& make install \
 	&& rm -rf /usr/local/src/httpd-${HTTPD_VERSION} \
-	&& rm -rf $HTTPD_PREFIX/manual \
+	&& rm -rf ${HTTPD_PREFIX}/manual \
 	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
 
 COPY httpd-foreground /usr/local/bin/
