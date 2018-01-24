@@ -6,8 +6,6 @@ ARG HTTPD_VERSION
 # Environment settings
 ENV HTTPD_VERSION=${HTTPD_VERSION:-2.4.29}
 ENV HTTPD_TGZ_URL http://mirrors.hust.edu.cn/apache/httpd/httpd-${HTTPD_VERSION}.tar.gz
-ENV HTTPD_PREFIX /usr/local/apache2
-ENV PATH $HTTPD_PREFIX/bin:$PATH
 
 RUN set -xe \
 	&& buildDeps=" \
@@ -22,10 +20,12 @@ RUN set -xe \
 	\
 	&& AprVersion=1.6.3 \
 		AprUtilVersion=1.6.1 \
+	&& export CFLAGS="-O2" \
 	&& cd /usr/local/src \
 	&& curl -fSL ${HTTPD_TGZ_URL} -o httpd-${HTTPD_VERSION}.tar.gz \
 	&& tar zxf httpd-${HTTPD_VERSION}.tar.gz \
 	&& rm -rf httpd-${HTTPD_VERSION}.tar.gz \
+	\
 	&& cd httpd-${HTTPD_VERSION}/srclib \
 	&& curl -fSL http://mirrors.hust.edu.cn/apache/apr/apr-${AprVersion}.tar.gz -o apr-${AprVersion}.tar.gz \
 	&& curl -fSL http://mirrors.hust.edu.cn/apache/apr/apr-util-${AprUtilVersion}.tar.gz -o apr-util-${AprUtilVersion}.tar.gz \
@@ -35,11 +35,13 @@ RUN set -xe \
 	&& mv apr-util-${AprUtilVersion} apr-util \
 	&& rm -f apr-${AprVersion}.tar.gz \
 	&& rm -f apr-util-${AprUtilVersion}.tar.gz \
+	\
 	&& cd /usr/local/src/httpd-${HTTPD_VERSION}/ \
 	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
 	&& ./configure \
 		--build="$gnuArch" \
-		--prefix="$HTTPD_PREFIX" \
+		--prefix=/usr/local \
+		--libdir=/usr/local/lib64 \
 		--enable-mods-shared=most \
 		--enable-headers \
 		--enable-mime-magic \
