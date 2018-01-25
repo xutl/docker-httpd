@@ -72,9 +72,14 @@ RUN set -xe \
 	&& make install \
 	&& rm -rf /usr/local/src/httpd-${HTTPD_VERSION} \
 	&& rm -rf ${HTTPD_PREFIX}/manual \
+	&& rm -rf ${HTTPD_PREFIX}/man \
 	\
-	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps \
-	&& mkdir -p /usr/local/apache2/conf/sites
+	&& sed -ri \
+		-e 's!^(\s*CustomLog)\s+\S+!\1 /proc/self/fd/1!g' \
+		-e 's!^(\s*ErrorLog)\s+\S+!\1 /proc/self/fd/2!g' \
+		"$HTTPD_PREFIX/conf/httpd.conf" \
+	\
+	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
 
 # Add configuration files
 COPY image-files/ /
